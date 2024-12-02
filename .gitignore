@@ -1,0 +1,7 @@
+.vscode
+./source
+venv
+.secrets
+.kaggle/*.json
+__pycache__
+staging
