@@ -1,6 +1,6 @@
 
-from src.Transformation.common.kw_extractors import IKeywordExtractor, KeywordExtractor
-from src.Transformation.common.text_clustering import ITextClassefier, TextClassefier
+from src.Transformation.common.kw_extractors import KeywordExtractor
+from src.Transformation.common.text_clustering import ITextClassifier, TextClassifier
 from pyspark.sql.types import ArrayType, StructType, StructField, StringType, FloatType
 from pyspark.sql.functions import udf
 
@@ -30,8 +30,16 @@ def create_text_classefier_udf(txt_classefier_bc, candidate_lables_bc):
             return None
         kw_extractor = txt_classefier_bc.value
         candidate_lables = candidate_lables_bc.value
-        results = TextClassefier(kw_extractor).run(text, candidate_lables)
-        return results['labels'][0]
+        results = TextClassifier(kw_extractor).run(text, candidate_lables)
+        
+        if not results:
+            return None
+        
+        if results['scores'][0] > 0.2:
+            return str(results['labels'][0])
+        
+        else:
+            return None
     
     return text_classefier
 
